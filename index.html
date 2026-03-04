@@ -819,6 +819,124 @@
     text-decoration: none;
   }
 
+  /* ── API KEY BANNER ── */
+  .apikey-banner {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(255,184,0,0.06);
+    border: 1px solid rgba(255,184,0,0.3);
+    padding: 14px 20px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+  .apikey-label {
+    font-size: 10px;
+    background: var(--amber);
+    color: var(--bg);
+    padding: 2px 8px;
+    letter-spacing: 0.15em;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .apikey-input {
+    flex: 1;
+    min-width: 220px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    outline: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-bright);
+    padding: 8px 14px;
+    caret-color: var(--cyan);
+  }
+  .apikey-input::placeholder { color: var(--text-dim); }
+  .apikey-input:focus { border-color: var(--amber); }
+  .apikey-confirm {
+    background: var(--amber);
+    color: var(--bg);
+    border: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    padding: 8px 18px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .apikey-confirm:hover { opacity: 0.85; }
+  .apikey-set { font-size: 11px; color: var(--green); letter-spacing: 0.08em; display: none; }
+  .apikey-hint { font-size: 10px; color: var(--text-dim); width: 100%; margin-top: 4px; }
+  .apikey-hint a { color: var(--amber); text-decoration: none; }
+
+  /* ── ARCHITECTURE ── */
+  .arch-section {
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .arch-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    padding: 32px 24px;
+    flex-wrap: wrap;
+    row-gap: 16px;
+  }
+  .arch-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    min-width: 110px;
+  }
+  .arch-box {
+    border: 1px solid var(--border-bright);
+    background: var(--bg3);
+    padding: 10px 14px;
+    text-align: center;
+    width: 100%;
+    position: relative;
+    transition: border-color 0.2s;
+  }
+  .arch-box:hover { border-color: var(--cyan); }
+  .arch-box-icon { font-size: 18px; margin-bottom: 4px; display: block; }
+  .arch-box-title { font-size: 11px; color: var(--text-bright); font-weight: 500; letter-spacing: 0.05em; }
+  .arch-box-sub { font-size: 10px; color: var(--text-dim); margin-top: 3px; letter-spacing: 0.04em; line-height: 1.4; }
+  .arch-box.highlight { border-color: rgba(0,212,255,0.4); background: rgba(0,212,255,0.04); }
+  .arch-box.highlight .arch-box-title { color: var(--cyan); }
+  .arch-arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 0 6px;
+    color: var(--text-dim);
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .arch-arrow-label { font-size: 9px; color: var(--text-dim); letter-spacing: 0.1em; white-space: nowrap; }
+  .arch-stack {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    padding: 0 24px 24px;
+    border-top: 1px solid var(--border);
+    padding-top: 20px;
+  }
+  .arch-detail {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+    line-height: 1.8;
+    border-left: 2px solid var(--border);
+    padding-left: 10px;
+  }
+  .arch-detail strong { color: var(--text-bright); display: block; margin-bottom: 4px; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; }
+
   /* ── UTILITY ── */
   .tag {
     display: inline-block;
@@ -867,6 +985,15 @@
   <div class="mission">
     <span class="mission-label">CONTEXT</span>
     Modern SOCs receive thousands of alerts daily. 97% are noise. This engine triages every alert using MITRE ATT&CK taxonomy, severity scoring, and AI-powered analyst reasoning — so your team focuses only on real threats.
+  </div>
+
+  <!-- API KEY -->
+  <div class="apikey-banner">
+    <span class="apikey-label">GEMINI API KEY</span>
+    <input class="apikey-input" id="apikey-input" type="password" placeholder="AIza..." spellcheck="false" autocomplete="off" />
+    <button class="apikey-confirm" id="apikey-btn" onclick="setApiKey()">SET KEY →</button>
+    <span class="apikey-set" id="apikey-set">✓ KEY ACTIVE</span>
+    <div class="apikey-hint">Free key (no credit card) at <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a> · Held in memory only, never stored, sent only to Google's API.</div>
   </div>
 
   <!-- SAMPLE ALERTS -->
@@ -1044,6 +1171,67 @@ Example: Multiple failed authentication attempts detected from external IP 203.0
 
   </div>
 
+  <!-- ARCHITECTURE -->
+  <div class="section-label" style="margin-top:12px;">How this was built</div>
+  <div class="arch-section">
+    <div class="arch-flow">
+
+      <div class="arch-node">
+        <div class="arch-box">
+          <span class="arch-box-icon">⌨</span>
+          <div class="arch-box-title">Alert Input</div>
+          <div class="arch-box-sub">Raw log / SIEM event<br>pasted or selected</div>
+        </div>
+      </div>
+
+      <div class="arch-arrow"><span>→</span><span class="arch-arrow-label">fetch()</span></div>
+
+      <div class="arch-node">
+        <div class="arch-box highlight">
+          <span class="arch-box-icon">◈</span>
+          <div class="arch-box-title">Gemini 1.5 Flash</div>
+          <div class="arch-box-sub">Google AI API<br>Free tier · No backend</div>
+        </div>
+      </div>
+
+      <div class="arch-arrow"><span>→</span><span class="arch-arrow-label">JSON</span></div>
+
+      <div class="arch-node">
+        <div class="arch-box">
+          <span class="arch-box-icon">⚙</span>
+          <div class="arch-box-title">JSON Parser</div>
+          <div class="arch-box-sub">Structured output<br>extracted + validated</div>
+        </div>
+      </div>
+
+      <div class="arch-arrow"><span>→</span><span class="arch-arrow-label">render</span></div>
+
+      <div class="arch-node">
+        <div class="arch-box">
+          <span class="arch-box-icon">▦</span>
+          <div class="arch-box-title">UI Panels</div>
+          <div class="arch-box-sub">Verdict · Severity<br>MITRE · Containment</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="arch-stack">
+      <div class="arch-detail">
+        <strong>Frontend</strong>
+        Vanilla HTML + CSS + JS - zero frameworks, zero dependencies. Single file deployable anywhere.
+      </div>
+      <div class="arch-detail">
+        <strong>AI Layer</strong>
+        System prompt encodes MITRE ATT&CK v14 taxonomy. Model instructed to return strict JSON. Structured output enables UI components instead of text blobs.
+      </div>
+      <div class="arch-detail">
+        <strong>Why Gemini here</strong>
+        Google's API supports direct browser CORS calls with a free API key. No backend server needed, the entire demo runs client-side. Free tier: 15 req/min, 1000 req/day.
+      </div>
+    </div>
+  </div>
+
   <!-- CLOSING CARD -->
   <div style="border: 1px solid var(--border); background: var(--bg2); padding: 32px 36px; margin-bottom: 40px; position: relative; overflow: hidden;">
     <div style="position:absolute; top:0; left:0; width:3px; height:100%; background: var(--cyan);"></div>
@@ -1068,6 +1256,27 @@ Example: Multiple failed authentication attempts detected from external IP 203.0
 </div>
 
 <script>
+let GEMINI_KEY = '';
+
+function setApiKey() {
+  const val = document.getElementById('apikey-input').value.trim();
+  if (!val || val.length < 10) {
+    document.getElementById('apikey-input').style.borderColor = 'var(--red)';
+    return;
+  }
+  GEMINI_KEY = val;
+  document.getElementById('apikey-input').style.borderColor = 'var(--green)';
+  document.getElementById('apikey-set').style.display = 'inline';
+  document.getElementById('apikey-btn').style.display = 'none';
+  document.getElementById('apikey-input').disabled = true;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('apikey-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') setApiKey();
+  });
+});
+
 const SAMPLES = [
   `ALERT ID: SOC-2024-11847
 Timestamp: 2024-03-15 03:14:22 UTC
@@ -1085,7 +1294,7 @@ EDR Status: No EDR installed on this host`,
   `ALERT ID: SOC-2024-08834
 Timestamp: 2024-03-15 11:47:09 UTC
 Host: WKSTN-FINANCE-022 (10.0.4.22)
-User: finance\mjohnson
+User: finance\\mjohnson
 Asset Criticality: MEDIUM
 
 Event: Internal network scan detected. Host 10.0.4.22 sending SYN packets to ports 445 (SMB), 3389 (RDP), and 135 (RPC) across 84 internal hosts (10.0.0.0/16) within 6 minutes.
@@ -1098,14 +1307,14 @@ SIEM correlation: Same host had failed VPN auth from external IP 3 hours ago`,
   `ALERT ID: SOC-2024-15503
 Timestamp: 2024-03-15 22:03:55 UTC
 Host: finance-ws-07 (172.16.10.45)
-User: finance\agarcia
+User: finance\\agarcia
 Asset Criticality: HIGH (access to financial systems)
 
-Event: Suspicious periodic outbound HTTPS (443) connections to 94.102.49.190 observed every 240 seconds (±5s jitter) for past 3 hours.
+Event: Suspicious periodic outbound HTTPS (443) connections to 94.102.49.190 observed every 240 seconds (+/-5s jitter) for past 3 hours.
 Domain: secure-update-cdn[.]net — registered 3 days ago, hosted on bulletproof hosting
 VirusTotal: 4/72 vendors flag as malicious
 Proxy logs: No user-agent string in request, custom TLS fingerprint (JA3: 6734f37431670b3ab4292b8f60f29984)
-User agarcia reports: "I haven't been at this machine since 5pm"
+User agarcia reports: I have not been at this machine since 5pm
 Process tree: WINWORD.EXE → cmd.exe → powershell.exe → [suspicious binary]`,
 
   `ALERT ID: SOC-2024-19921
@@ -1114,8 +1323,8 @@ User: jsmith@corp.com (james.smith)
 Asset: CORP-WIN-099
 DLP Policy Triggered: LARGE_UPLOAD_PERSONAL_CLOUD
 
-Event: User jsmith uploaded 2.3GB of files to personal Google Drive (drive.google.com) from corporate network over 18 minutes.
-File types detected: .xlsx (42 files), .pdf (18 files), .docx (31 files) — matching pattern: "Q4_*", "compensation_*", "client_data_*"
+Event: User jsmith uploaded 2.3GB of files to personal Google Drive from corporate network over 18 minutes.
+File types detected: .xlsx (42 files), .pdf (18 files), .docx (31 files) — matching pattern: Q4_*, compensation_*, client_data_*
 HR Context: Employee submitted resignation 2 days ago. Last working day: Tomorrow.
 IT Context: Offboarding ticket opened but access not yet revoked.
 Prior DLP alerts on this user: 0 (clean history)
@@ -1168,18 +1377,18 @@ function startLoadingPhases() {
   }, 1200);
 }
 
-function stopLoadingPhases() {
-  clearInterval(phaseInterval);
-}
+function stopLoadingPhases() { clearInterval(phaseInterval); }
 
 async function runTriage() {
-  const alert = document.getElementById('alert-input').value.trim();
-  if (!alert) {
-    document.getElementById('alert-input').focus();
+  const alertText = document.getElementById('alert-input').value.trim();
+  if (!alertText) { document.getElementById('alert-input').focus(); return; }
+
+  if (!GEMINI_KEY) {
+    document.getElementById('error-section').style.display = 'block';
+    document.getElementById('error-msg').textContent = 'Please enter your Gemini API key above. Get a free key at aistudio.google.com/apikey — no credit card required.';
     return;
   }
 
-  // UI state
   document.getElementById('triage-btn').disabled = true;
   document.getElementById('triage-btn').textContent = '⟳ Analyzing...';
   document.getElementById('output-section').style.display = 'none';
@@ -1187,74 +1396,63 @@ async function runTriage() {
   document.getElementById('loading-section').style.display = 'block';
   startLoadingPhases();
 
-  const systemPrompt = `You are an elite Tier-3 SOC analyst with deep expertise in incident response, threat intelligence, and the MITRE ATT&CK framework (v14). You have 15+ years of experience at hyperscalers and government agencies.
+  const prompt = `You are an elite Tier-3 SOC analyst with deep expertise in incident response, threat intelligence, and the MITRE ATT&CK framework (v14). You have 15+ years of experience at hyperscalers and government agencies.
 
-Your task: Analyze the provided security alert and return ONLY a valid JSON object with this exact structure (no other text, no markdown, no backticks):
+Analyze the provided security alert and return ONLY a valid JSON object with this exact structure. No other text, no markdown, no backticks:
 
 {
-  "verdict": "ESCALATE IMMEDIATELY" | "ESCALATE" | "MONITOR" | "DISMISS",
-  "verdict_class": "escalate" | "monitor" | "dismiss",
-  "verdict_subtitle": "one-line reason for the verdict",
-  "threat_name": "specific threat technique name",
-  "threat_id": "MITRE ATT&CK ID e.g. T1110.001",
-  "mitre_tactic": "Tactic Name (e.g. Initial Access)",
-  "mitre_chain": ["Step 1 tactic", "Step 2 tactic", "Step 3 tactic"],
-  "severity_score": <number 1-10, one decimal>,
-  "severity_label": "Critical|High|Medium|Low",
-  "false_positive_probability": <integer 0-100>,
-  "fp_label": "short label e.g. Very Unlikely — Treat as Real",
-  "priority_queue": "P0|P1|P2|P3",
-  "priority_label": "e.g. Immediate Escalation Required",
-  "time_to_act": "e.g. <5 min",
-  "tta_label": "e.g. Potential active breach in progress",
-  "containment_steps": [
-    "Step description",
-    "Step description",
-    "Step description",
-    "Step description",
-    "Step description"
-  ],
+  "verdict": "ESCALATE IMMEDIATELY",
+  "verdict_class": "escalate",
+  "verdict_subtitle": "one-line reason",
+  "threat_name": "specific technique name",
+  "threat_id": "T1110.001",
+  "mitre_tactic": "Initial Access",
+  "mitre_chain": ["Reconnaissance", "Initial Access", "Credential Access"],
+  "severity_score": 9.2,
+  "severity_label": "Critical",
+  "false_positive_probability": 3,
+  "fp_label": "Very Unlikely — Treat as Real",
+  "priority_queue": "P0",
+  "priority_label": "Immediate Escalation Required",
+  "time_to_act": "<5 min",
+  "tta_label": "Potential active breach in progress",
+  "containment_steps": ["Step 1", "Step 2", "Step 3", "Step 4", "Step 5"],
   "iocs": ["IOC 1", "IOC 2", "IOC 3"],
-  "reasoning": "3-5 sentences of expert analyst reasoning. Reference specific indicators from the alert. Explain WHY this verdict and severity. Be precise and technical. Mention what could make this a false positive if applicable.",
-  "context_notes": "1-2 sentences of additional context, threat actor patterns, or relevant industry knowledge."
+  "reasoning": "3-5 sentences of expert analyst reasoning citing specific indicators from the alert.",
+  "context_notes": "1-2 sentences of additional threat actor context."
 }
 
-Rules:
-- Base ALL analysis on the actual indicators in the alert
-- Use real MITRE ATT&CK technique IDs (T####.###)
-- severity_score must reflect actual risk (10 = active breach of critical asset, 1 = almost certainly benign)
-- false_positive_probability must be realistic and defensible
-- containment_steps must be specific, actionable, and ordered correctly
-- reasoning must cite specific evidence from the alert
-- Return ONLY the JSON object. No preamble, no explanation, no markdown.`;
+verdict must be one of: ESCALATE IMMEDIATELY, ESCALATE, MONITOR, DISMISS
+verdict_class must be one of: escalate, monitor, dismiss
+Use real MITRE ATT&CK technique IDs. Base everything on actual indicators in the alert. Return ONLY the JSON object.
+
+Alert to analyze:
+${alertText}`;
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + GEMINI_KEY;
+    const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1200,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: `Analyze this security alert:\n\n${alert}` }]
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { temperature: 0.2, maxOutputTokens: 1500 }
       })
     });
 
     if (!response.ok) {
       const err = await response.json();
-      throw new Error(err.error?.message || `HTTP ${response.status}`);
+      throw new Error((err.error && err.error.message) || 'HTTP ' + response.status);
     }
 
     const data = await response.json();
-    const raw = data.content.map(b => b.text || '').join('');
-
+    const raw = data.candidates[0].content.parts[0].text;
     let result;
     try {
-      // Strip any accidental markdown fences
       const clean = raw.replace(/```json|```/g, '').trim();
       result = JSON.parse(clean);
-    } catch (e) {
-      throw new Error('Failed to parse AI response. Raw: ' + raw.substring(0, 200));
+    } catch(e) {
+      throw new Error('Could not parse response: ' + raw.substring(0, 200));
     }
 
     renderResults(result);
@@ -1271,32 +1469,24 @@ Rules:
 }
 
 function renderResults(r) {
-  // Verdict banner
   const banner = document.getElementById('verdict-banner');
   banner.className = 'verdict-banner ' + (r.verdict_class || 'monitor');
   document.getElementById('verdict-label').textContent = r.verdict || 'UNKNOWN';
   document.getElementById('verdict-subtitle').textContent = r.verdict_subtitle || '';
 
-  // Severity
   const sev = parseFloat(r.severity_score) || 0;
   document.getElementById('severity-num').textContent = sev.toFixed(1);
-  setTimeout(() => {
-    document.getElementById('gauge-fill').style.width = (sev / 10 * 100) + '%';
-  }, 100);
+  setTimeout(() => { document.getElementById('gauge-fill').style.width = (sev / 10 * 100) + '%'; }, 100);
   document.getElementById('severity-label').textContent = r.severity_label || '';
-
-  // Color the severity number
   const sevEl = document.getElementById('severity-num');
   if (sev >= 8) sevEl.style.color = 'var(--red)';
   else if (sev >= 6) sevEl.style.color = 'var(--amber)';
   else if (sev >= 4) sevEl.style.color = 'var(--cyan)';
   else sevEl.style.color = 'var(--green)';
 
-  // FP
-  document.getElementById('fp-value').textContent = (r.false_positive_probability ?? '—') + '%';
+  document.getElementById('fp-value').textContent = (r.false_positive_probability != null ? r.false_positive_probability : '—') + '%';
   document.getElementById('fp-label').textContent = r.fp_label || '';
 
-  // Priority
   const pEl = document.getElementById('priority-value');
   pEl.textContent = r.priority_queue || '—';
   if (r.priority_queue === 'P0') pEl.style.color = 'var(--red)';
@@ -1304,11 +1494,8 @@ function renderResults(r) {
   else pEl.style.color = 'var(--cyan)';
   document.getElementById('priority-label').textContent = r.priority_label || '';
 
-  // TTA
   document.getElementById('tta-value').textContent = r.time_to_act || '—';
   document.getElementById('tta-label').textContent = r.tta_label || '';
-
-  // Threat classification
   document.getElementById('threat-name').textContent = r.threat_name || '—';
   document.getElementById('threat-id').textContent = r.threat_id || '';
   document.getElementById('mitre-tactic').textContent = r.mitre_tactic || '—';
@@ -1318,45 +1505,38 @@ function renderResults(r) {
   (r.mitre_chain || []).forEach((step, i) => {
     const div = document.createElement('div');
     div.className = 'chain-step';
-    div.innerHTML = `${i > 0 ? '<span class="chain-arrow">→</span>' : ''}<span class="chain-tag">${step}</span>`;
+    div.innerHTML = (i > 0 ? '<span class="chain-arrow">→</span>' : '') + '<span class="chain-tag">' + step + '</span>';
     chain.appendChild(div);
   });
 
-  // Containment
   const list = document.getElementById('containment-list');
   list.innerHTML = '';
   (r.containment_steps || []).forEach((step, i) => {
     const li = document.createElement('li');
-    li.innerHTML = `<span class="check-num">${String(i+1).padStart(2,'0')}</span>${step}`;
+    li.innerHTML = '<span class="check-num">' + String(i+1).padStart(2,'0') + '</span>' + step;
     list.appendChild(li);
   });
 
-  // Reasoning
   document.getElementById('reasoning-text').textContent = r.reasoning || '—';
 
-  // IOCs + context
   const iocBody = document.getElementById('ioc-body');
-  const iocs = r.iocs || [];
   let iocHtml = '';
-  if (iocs.length) {
+  if ((r.iocs || []).length) {
     iocHtml += '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;">';
-    iocs.forEach(ioc => {
-      iocHtml += `<span style="background:var(--bg3);border:1px solid var(--border);padding:4px 10px;font-size:11px;letter-spacing:0.05em;">${ioc}</span>`;
+    r.iocs.forEach(ioc => {
+      iocHtml += '<span style="background:var(--bg3);border:1px solid var(--border);padding:4px 10px;font-size:11px;">' + ioc + '</span>';
     });
     iocHtml += '</div>';
   }
   if (r.context_notes) {
-    iocHtml += `<div style="font-size:12px;color:var(--text);line-height:1.7;border-left:2px solid var(--cyan);padding-left:14px;">${r.context_notes}</div>`;
+    iocHtml += '<div style="font-size:12px;color:var(--text);line-height:1.7;border-left:2px solid var(--cyan);padding-left:14px;">' + r.context_notes + '</div>';
   }
   iocBody.innerHTML = iocHtml || '—';
 
-  // Show output
   const out = document.getElementById('output-section');
   out.style.display = 'block';
   out.style.animation = 'none';
-  requestAnimationFrame(() => {
-    out.style.animation = 'fadein 0.5s ease forwards';
-  });
+  requestAnimationFrame(() => { out.style.animation = 'fadein 0.5s ease forwards'; });
   out.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 </script>
