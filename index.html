@@ -1045,7 +1045,7 @@
 Example: Multiple failed authentication attempts detected from external IP 203.0.113.42 targeting user accounts via VPN gateway. 156 attempts in 8 minutes, 2 successful. Source geo: China. Asset: corp-vpn-01."></textarea>
     <div class="input-footer">
       <span class="char-count" id="char-count">0 chars</span>
-      <span>MITRE ATT&CK v14 · Claude Sonnet 4</span>
+      <span>MITRE ATT&CK v14 · Gemini 2.5 Flash</span>
     </div>
   </div>
 
@@ -1219,15 +1219,15 @@ Example: Multiple failed authentication attempts detected from external IP 203.0
     <div class="arch-stack">
       <div class="arch-detail">
         <strong>Frontend</strong>
-        Vanilla HTML + CSS + JS - zero frameworks, zero dependencies. Single file deployable anywhere.
+        Vanilla HTML + CSS + JS — zero frameworks, zero dependencies. Single file deployable anywhere.
       </div>
       <div class="arch-detail">
         <strong>AI Layer</strong>
-        System prompt encodes MITRE ATT&CK v14 taxonomy. Model instructed to return strict JSON. Structured output enables UI components instead of text blobs.
+        System prompt encodes MITRE ATT&CK v14 taxonomy. Model instructed to return strict JSON — no prose, no markdown. Structured output enables UI components instead of text blobs.
       </div>
       <div class="arch-detail">
         <strong>Why Gemini here</strong>
-        Google's API supports direct browser CORS calls with a free API key. No backend server needed, the entire demo runs client-side. Free tier: 15 req/min, 1000 req/day.
+        Google's API supports direct browser CORS calls with a free API key. No backend server needed — the entire demo runs client-side. Free tier: 15 req/min, 1000 req/day.
       </div>
     </div>
   </div>
@@ -1436,7 +1436,12 @@ ${alertText}`;
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.2, maxOutputTokens: 1500 }
+        generationConfig: {
+          temperature: 0.2,
+          maxOutputTokens: 2048,
+          responseMimeType: 'application/json'
+        },
+        thinkingConfig: { thinkingBudget: 0 }
       })
     });
 
@@ -1446,13 +1451,18 @@ ${alertText}`;
     }
 
     const data = await response.json();
-    const raw = data.candidates[0].content.parts[0].text;
+    // Filter out thinking parts (thought:true), grab only the actual response text
+    const parts = data.candidates[0].content.parts;
+    const raw = parts.filter(p => !p.thought).map(p => p.text || '').join('');
     let result;
     try {
       const clean = raw.replace(/```json|```/g, '').trim();
-      result = JSON.parse(clean);
+      const start = clean.indexOf('{');
+      const end = clean.lastIndexOf('}');
+      if (start === -1 || end === -1) throw new Error('No JSON found in response');
+      result = JSON.parse(clean.slice(start, end + 1));
     } catch(e) {
-      throw new Error('Could not parse response: ' + raw.substring(0, 200));
+      throw new Error('Could not parse response: ' + raw.substring(0, 300));
     }
 
     renderResults(result);
@@ -1542,5 +1552,3 @@ function renderResults(r) {
 </script>
 </body>
 </html>
-
-
